@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: bhashanews
+      POSTGRES_USER: bhashanews
+      POSTGRES_PASSWORD: bhashanews
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      DATABASE_URL: postgresql://bhashanews:bhashanews@postgres:5432/bhashanews
+      EDITOR_KEY: demo-editor-key
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+volumes:
+  postgres_data:
